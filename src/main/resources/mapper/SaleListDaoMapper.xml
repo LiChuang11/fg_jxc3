@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.SaleListDao">
+    <insert id="saveSaleList" parameterType="com.atguigu.jxc.entity.SaleList"
+    useGeneratedKeys="true" keyColumn="sale_list_id" keyProperty="saleListId">
+        insert into t_sale_list values
+        (
+            #{saleListId},
+            #{saleNumber},
+            #{amountPaid},
+            #{amountPayable},
+            #{saleDate},
+            #{state},
+            #{remarks},
+            #{customerId},
+            #{userId}
+        )
+    </insert>
+    <update id="updateSaleListGoodsState">
+        update t_sale_list set state = 1 where sale_list_id = #{saleListId}
+    </update>
+    <delete id="deleteSale">
+        delete from t_sale_list where sale_list_id = #{saleListId}
+    </delete>
+    <select id="getSaleListGoods" resultType="com.atguigu.jxc.entity.SaleList">
+        select * from t_sale_list
+        <where>
+            <if test="saleNumber">
+                sale_number like concat('%', #{saleNumber}, '%')
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="1 == 1">
+                and sale_date &gt; #{sTime} and sale_date &lt; #{eTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.GoodsTypeDao">
+    <select id="loadGoodsType">
+        select t2.goods_type_id oneId, t2.goods_type_name oneName,
+                t1.goods_type_id twoId, t1.goods_type_name twoName,
+                 t2.goods_type_state state
+                 from t_goods_type t1 inner join t_goods_type t2
+        on t1.goods_type_id = t2.p_id
+    </select>
+
+    <select id="findTwoList" parameterType="integer" resultType="com.atguigu.jxc.entity.GoodsType">
+        select * from t_goods_type where p_id = #{goodsTypeId}
+    </select>
+    <select id="findCustomerList" resultType="com.atguigu.jxc.entity.GoodsType">
+        select * from t_goods_type
+    </select>
+
+    <insert id="saveGoodsType" useGeneratedKeys="true" keyProperty="goods_type_id">
+        insert into t_goods_type
+        (goods_type_name, p_id, goods_type_state)
+         values (#{goodsTypeName}, #{pId}, #{state})
+    </insert>
+
+    <delete id="deleteGoodsTypeById" parameterType="integer">
+        delete from t_goods_type where goods_type_id = #{goodsTypeId}
+    </delete>
+</mapper>

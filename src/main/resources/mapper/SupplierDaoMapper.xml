@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.SupplierDao">
+    <select id="getSupplierList" resultType="com.atguigu.jxc.entity.Supplier">
+        select * from t_supplier
+        <where>
+            <if test="supplierName != null and supplierName != ''">
+                supplier_name LIKE CONCAT('%', #{supplierName} ,'%')
+            </if>
+        </where>
+        limit #{page}, #{rows}
+    </select>
+
+    <insert id="saveSupplier" parameterType="com.atguigu.jxc.entity.Supplier" useGeneratedKeys="true" keyProperty="supplier_id">
+        insert into t_supplier values
+        (#{supplierId},#{supplierName},#{contacts},#{phoneNumber},#{address},#{remarks})
+    </insert>
+
+    <update id="updateSupplierById">
+        update t_supplier
+        <set>
+            <if test="supplierId != null" >
+                supplier_id = #{supplierId},
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                supplier_name = #{supplierName},
+            </if>
+            <if test="contacts != null and contacts != ''">
+                contacts = #{contacts},
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                phone_number= #{phoneNumber},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+        </set>
+        where supplier_id = #{supplierId}
+    </update>
+
+    <delete id="deleteById" parameterType="string">
+        delete from t_supplier where supplier_id = #{id}
+    </delete>
+
+    <delete id="deleteByIds">
+        delete from t_supplier where supplier_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+
+    </delete>
+
+    <select id="getComboboxList" resultType="com.atguigu.jxc.entity.Supplier">
+        select * from t_supplier
+        <where>
+            <if test="query != null and query!= ''">
+                supplier_name like concat('%', #{query}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getSupplierName" resultType="string">
+        select supplier_name from t_supplier where supplier_id = #{supplierId}
+    </select>
+</mapper>

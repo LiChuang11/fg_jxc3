@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.OverflowListGoodsDao">
+    <insert id="saveOverflowListGoods" parameterType="com.atguigu.jxc.entity.OverflowListGoods">
+        insert into t_overflow_list_goods (
+            goods_id,goods_code,goods_name,goods_model,goods_unit,
+            goods_num,price,total,overflow_list_id,goods_type_id
+        ) values (
+            #{goodsId},
+            #{goodsCode},
+            #{goodsName},
+            #{goodsModel},
+            #{goodsUnit},
+            #{goodsNum},
+            #{price},
+            #{total},
+            #{overflowListId},
+            #{goodsTypeId}
+        );
+    </insert>
+
+    <select id="getOverflowListGoodsById" resultType="com.atguigu.jxc.entity.OverflowListGoods">
+        select * from t_overflow_list_goods where overflowListId = #{overflowListId}
+    </select>
+</mapper>

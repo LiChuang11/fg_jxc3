@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.SaleListGoodsDao">
+    <insert id="saveSaleListGoods" parameterType="com.atguigu.jxc.entity.SaleListGoods">
+        insert into t_sale_list_goods values
+        (
+            #{goodsId},
+            #{goodsCode},
+            #{goodsName},
+            #{goodsModel},
+            #{goodsNum},
+            #{goodsUnit},
+            #{price},
+            #{total},
+            #{saleListId},
+            #{goodsTypeId}
+        )
+    </insert>
+    <delete id="deleteSaleGoods">
+        delete from t_sale_list_goods where sale_list_id = #{saleListId}
+    </delete>
+    <select id="getSaleListGoodsById" resultType="com.atguigu.jxc.entity.SaleListGoods">
+        select * from t_sale_list_goods where sale_list_id = #{saleListId}
+    </select>
+</mapper>

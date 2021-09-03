@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.CustomerReturnListDao">
+
+    <insert id="saveCustomerReturnList" parameterType="com.atguigu.jxc.entity.CustomerReturnList"
+    useGeneratedKeys="true" keyProperty="customerReturnListId" keyColumn="customer_return_list_id">
+        insert into t_customer_return_list values (
+            #{customerReturnListId},
+            #{returnNumber},
+            #{returnDate},
+            #{amountPaid},
+            #{amountPayable},
+            #{state},
+            #{customerId},
+            #{userId},
+            #{remarks}
+        )
+    </insert>
+    <delete id="deleteCustomerReturn">
+        delete from t_customer_return_list
+        where customer_return_list_id = #{customerReturnListId}
+    </delete>
+    <select id="getSaleListGoods" resultType="com.atguigu.jxc.entity.CustomerReturnList">
+        select * from t_customer_return_list
+        <where>
+            <if test="returnNumber">
+                return_number like concat('%', #{returnNumber}, '%')
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="1 == 1">
+                and return_date &gt; #{sTime} and return_date &lt; #{eTime}
+            </if>
+        </where>
+    </select>
+</mapper>

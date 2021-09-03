@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.GoodsDao">
+    <select id="listInventory" resultMap="goodsMap">
+        select tg.*, tgt.goods_type_name,
+        tslg.goods_num sale_total,tslg.goods_unit,
+        tslg.goods_model
+        from t_goods tg left join
+        t_goods_type tgt on tg.goods_type_id = tgt.goods_type_id
+        left join t_sale_list_goods tslg on tgt.goods_type_id=tslg.goods_type_id
+        <where>
+            <if test="codeOrName != null and codeOrName != ''">
+                AND tg.goods_code = #{codeOrName}
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                AND tgt.goods_type_name = #{goodsTypeId}
+            </if>
+        </where>
+        group by tg.goods_id
+        limit #{page}, #{rows}
+    </select>
+    <resultMap id="goodsMap" type="com.atguigu.jxc.entity.Goods" autoMapping="true">
+        <id property="goodsId" column="goods_id"></id>
+        <result property="saleTotal" column="sale_total"></result>
+    </resultMap>
+
+    <select id="getGoodsList" resultType="com.atguigu.jxc.entity.Goods">
+        select tg.*, tgt.goods_type_name,
+        tslg.goods_num sale_total,tslg.goods_unit,
+        tslg.goods_model
+        from t_goods tg left join
+        t_goods_type tgt on tg.goods_type_id = tgt.goods_type_id
+        left join t_sale_list_goods tslg on tgt.goods_type_id=tslg.goods_type_id
+        <where>
+            <if test="goodsName != null and goodsName != ''">
+                AND tg.goods_name like concat('%', #{goodsName}, '%')
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                AND tgt.goods_type_name = #{goodsTypeId}
+            </if>
+        </where>
+        group by tg.goods_id
+        limit #{page}, #{rows}
+    </select>
+
+    <insert id="saveGoods" parameterType="com.atguigu.jxc.entity.Goods" useGeneratedKeys="true" keyColumn="goods_id" keyProperty="goodsId">
+        insert into t_goods
+        (goods_code, goods_name, inventory_quantity, last_purchasing_price, min_num, goods_model,goods_producer,
+        purchasing_price,remarks,selling_price,state,goods_unit,goods_type_id)
+        values
+        (#{goodsCode}, #{goodsName}, #{inventoryQuantity}, #{lastPurchasingPrice}, #{minNum}, #{goodsModel},
+         #{goodsProducer}, #{purchasingPrice}, #{remarks}, #{sellingPrice}, #{state}, #{goodsUnit}, #{goodsTypeId})
+    </insert>
+
+    <update id="updateById" parameterType="com.atguigu.jxc.entity.Goods">
+        update t_goods
+        <set>
+            <if test="goodsId != null and goodsId != ''">
+                goods_id= #{goodsId},
+            </if>
+            <if test="goodsCode != null and goodsCode != ''">
+                goods_code = #{goodsCode},
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                goods_name = #{goodsName},
+            </if>
+            <if test="inventoryQuantity != null and inventoryQuantity != ''">
+                inventory_quantity = #{inventoryQuantity},
+            </if>
+            <if test="lastPurchasingPrice != null and lastPurchasingPrice != ''">
+                last_purchasing_price = #{lastPurchasingPrice},
+            </if>
+            <if test="minNum != null and minNum != ''">
+                min_num= #{minNum},
+            </if>
+            <if test="goodsModel != null and goodsModel != ''">
+                goods_model = #{goodsModel},
+            </if>
+            <if test="goodsProducer != null and goodsProducer != ''">
+                goods_producer = #{goodsProducer},
+            </if>
+            <if test="purchasingPrice != null and purchasingPrice != ''">
+                purchasing_price = #{purchasingPrice},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks= #{remarks},
+            </if>
+            <if test="sellingPrice != null and sellingPrice != ''">
+                selling_price= #{sellingPrice},
+            </if>
+            <if test="state != null and state != ''">
+                state= #{state},
+            </if>
+            <if test="goodsUnit != null and goodsUnit != ''">
+                goods_unit = #{goodsUnit},
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                goods_type_id = #{goodsTypeId},
+            </if>
+        </set>
+        where goods_id = #{goodsId}
+    </update>
+
+    <delete id="deleteGoodsById" parameterType="integer">
+        delete from t_goods
+        where goods_id = #{goodsId} and state = 0
+    </delete>
+
+    <select id="getNoInventoryQuantity" resultType="com.atguigu.jxc.entity.Goods">
+        <include refid="selectGoods"></include>
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                tg.goods_name like concat('%', #{nameOrCode}, '%') or
+                tg.goods_code like concat('%', #{nameOrCode}, '%')
+            </if>
+        </where>
+        having tg.inventory_quantity &lt; 1
+    </select>
+
+    <select id="getHasInventoryQuantity" resultType="com.atguigu.jxc.entity.Goods">
+        <include refid="selectGoods"></include>
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                tg.goods_name like concat('%', #{nameOrCode}, '%') or
+                tg.goods_code like concat('%', #{nameOrCode}, '%')
+            </if>
+        </where>
+        having tg.inventory_quantity &gt; 0
+    </select>
+
+    <update id="saveStock">
+        update t_goods
+        <set>
+            <if test="inventoryQuantity != null">
+                inventory_quantity = #{inventoryQuantity},
+            </if>
+            <if test="purchasingPrice != null">
+                purchasing_price = #{purchasingPrice},
+            </if>
+        </set>
+        where goods_id = #{goodsId}
+    </update>
+
+    <update id="deleteStockById" parameterType="integer">
+        update t_goods set inventory_quantity = 0
+        where goods_id = #{goodsId} and state = 0
+    </update>
+
+    <select id="getNoDeleteById" resultType="int">
+        select state from t_goods where goods_id = #{goodsId}
+    </select>
+
+    <select id="getPreGoods" parameterType="integer" resultType="string">
+        select goods_code from t_goods where goods_id in
+        (select case when SIGN(goods_id - #{id} &lt; 0) then max(goods_id)
+        end from t_goods
+        group by SIGN(goods_id - #{id})
+        )
+    </select>
+
+    <select id="getAlarmList" parameterType="com.atguigu.jxc.entity.Goods">
+        <include refid="selectGoods"></include>
+        where tg.inventory_quantity &lt; tg.min_num
+    </select>
+
+
+    <sql id="selectGoods">
+        select tg.*, tgt.goods_type_name,
+        tslg.goods_num sale_total,tslg.goods_unit,
+        tslg.goods_model
+        from t_goods tg left join
+        t_goods_type tgt on tg.goods_type_id = tgt.goods_type_id
+        left join t_sale_list_goods tslg on tgt.goods_type_id=tslg.goods_type_id
+    </sql>
+</mapper>
+
